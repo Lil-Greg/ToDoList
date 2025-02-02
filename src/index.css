@@ -4,8 +4,6 @@
   font-weight: 400;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  justify-content: center;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -23,9 +21,13 @@ body {
 .simple-container{
   padding: 1rem;
   margin: 2rem;
-  width: 30rem;
+  width: 50rem;
   height: 30rem;
   border: ridge;
-  border-radius: 10%;
+  border-radius: 25px;
   text-align: center;
+}
+.f-input{
+  display: inline-block;
+  margin: 0.05rem;
 }

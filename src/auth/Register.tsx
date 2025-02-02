@@ -13,10 +13,10 @@ export default function Register() {
             <Form onSubmit={handleSubmit}>
                 <Row>
                     <Col>
-                        <Form.FloatingLabel className="col-6" label="Username">
+                        <Form.FloatingLabel className="col-6 f-input" label="Username">
                             <Form.Control placeholder="Username" />
                         </Form.FloatingLabel>
-                        <Form.FloatingLabel className="col-6" label="Password">
+                        <Form.FloatingLabel className="col-6 f-input" label="Password">
                             <Form.Control placeholder="Password" />
                         </Form.FloatingLabel>
                     </Col>
