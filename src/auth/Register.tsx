@@ -5,7 +5,7 @@ import "../index.css";
 export default function Register() {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-
+        // Check if User is not already in system
     }
     return (<>
         <Container className="simple-container">
