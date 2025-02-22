@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { Container, InputGroup } from "react-bootstrap";
 import { Form as FormBootstrap } from 'react-bootstrap';
 import { FaRegEye } from "react-icons/fa";
@@ -12,10 +12,17 @@ export default function Login() {
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     }
+
+    // Main function
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault()
+
+
+    }
     return (<>
         <Container className="simple-container">
             <h1>Login</h1>
-            <Form>
+            <Form onSubmit={handleSubmit}>
                 <FormBootstrap.FloatingLabel label="Username">
                     <FormBootstrap.Control placeholder="Username" />
                 </FormBootstrap.FloatingLabel>

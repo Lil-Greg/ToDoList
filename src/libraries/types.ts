@@ -1,0 +1,1 @@
+// For type-setting objects in the entire app.
