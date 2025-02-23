@@ -5,14 +5,13 @@ export default defineSchema({
     users: defineTable({
         username: v.string(),
         password: v.string(),
-        profilePicture:v.string(),
-        toDo: v.id("toDo"),
-        id:v.id("users")
+        email: v.string(),
+        profilePicture:v.optional(v.string()),
+        toDo: v.id("toDo")
     }),
     toDo: defineTable({
         task: v.string(),
         isCompleted: v.boolean(),
-        private: v.boolean(),
-        id: v.id("toDo")
+        private: v.boolean()
     })
-})
+});
