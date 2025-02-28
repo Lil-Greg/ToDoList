@@ -15,8 +15,16 @@ export const getUsername = query({
         username: v.string()
     },
     handler: async (ctx, args) => {
-        return await ctx.db.query("users")
+        const query = await ctx.db.query("users")
             .filter(data => data.eq(data.field("username"), args.username))
+            .collect()
+        return query.map((user) => user.username)
+    }
+});
+
+export const getMultiUsers = query({
+    handler: async (ctx) => {
+        return await ctx.db.query("users").collect()
     }
 });
 
