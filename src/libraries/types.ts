@@ -3,7 +3,6 @@
 import { Id } from "../../convex/_generated/dataModel";
 
 export interface UserTypes{
-    map(arg0: (user: string[]) => void): import("react").ReactNode
     users: User[]
 }
 export interface User{

@@ -2,12 +2,11 @@ import { Container } from 'react-bootstrap';
 import './Homepage.css';
 import getUsers from '../backend/getUsers';
 import { Audio } from 'react-loader-spinner';
-import { UserTypes } from '../libraries/types';
+import { User } from '../libraries/types';
 
 export default function Homepage() {
 
   const { data, isLoading, isError, error } = getUsers();
-  const user: UserTypes = data;
   if (isLoading) {
     <Audio
       height="80"
@@ -17,13 +16,20 @@ export default function Homepage() {
     />
   }
   if (isError || data == undefined) {
-    <>{error}</>
+    return <>
+      <h1>Error Name: {error?.name}</h1>
+      <h2>Error Message: {error?.message}</h2>
+    </>
+
   }
+  const users: User[] = data;
   return (
     <>
       <Container className='h-container'>
         <h1>To Do List</h1>
-        Users Are: {data?.map((user: string[]) => { user.username })}
+        Users Are: {users.map((userData: User, index) => (
+          <p key={index}>{userData.username}</p>
+        ))}
         <ol>
           <li>Shower</li>
           <li>Code</li>
