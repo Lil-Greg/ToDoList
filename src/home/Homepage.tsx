@@ -8,7 +8,7 @@ export default function Homepage() {
 
   const { data, isLoading, isError, error } = getUsers();
   if (isLoading) {
-    <Audio
+    return <Audio
       height="80"
       width="80"
       color="green"
