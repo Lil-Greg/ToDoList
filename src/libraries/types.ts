@@ -10,12 +10,21 @@ export interface User{
     password: string,
     email: string,
     profilePicture?:string,
-    toDo: Id<"toDo">
+    toDo?: Id<"toDo">
     _id: Id<"users">;
      _creationTime: number;
-}
+};
 export interface UserContextType {
     user: User | null,
     setUser: React.Dispatch<React.SetStateAction<User | null>> | null,
     isAuthenticated: boolean
+};
+export type Task = {
+    task:{
+        isCompleted: boolean,
+        message: string
+    }
+};
+export type TasksProps = {
+    tasks:Task[]
 };

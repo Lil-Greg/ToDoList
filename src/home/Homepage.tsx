@@ -1,26 +1,21 @@
 import { Container } from 'react-bootstrap';
 import './Homepage.css';
-import getUsers from '../backend/getUsers';
-import { Audio } from 'react-loader-spinner';
+import useGetUsers from '../backend/getUsers';
 import { User } from '../libraries/types';
+import { ErrorPage, LoadingPage } from '../state handling/StateHandling';
 
 export default function Homepage() {
 
-  const { data, isLoading, isError, error } = getUsers();
+  const { data, isLoading, isError, error } = useGetUsers();
   if (isLoading) {
-    return <Audio
-      height="80"
-      width="80"
-      color="green"
-      ariaLabel="loading"
-    />
+    return <LoadingPage />
   }
   if (isError || data == undefined) {
-    return <>
-      <h1>Error Name: {error?.name}</h1>
-      <h2>Error Message: {error?.message}</h2>
-    </>
-
+    if (error == null) {
+      return;
+    }
+    const newError = error;
+    return <ErrorPage error={newError} />
   }
   const users: User[] = data;
   return (

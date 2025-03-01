@@ -7,11 +7,15 @@ export default defineSchema({
         password: v.string(),
         email: v.string(),
         profilePicture:v.optional(v.string()),
-        toDo: v.id("toDo")
+        toDo: v.optional(v.id("toDo"))
     }),
     toDo: defineTable({
-        task: v.string(),
-        isCompleted: v.boolean(),
+        tasks:v.array(
+            v.object({
+                isCompleted: v.boolean(),
+                message:v.string()
+            })
+        ),
         private: v.boolean()
     })
 });

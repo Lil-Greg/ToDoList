@@ -33,10 +33,9 @@ export const createUser = mutation({
         password: v.string(),
         username: v.string(),
         email: v.string(),
-        pfp: v.optional(v.string()),
-        toDo: v.id("toDo")
+        profilePicture: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        return await ctx.db.insert("users", {username: args.username, password:args.password, email: args.email, profilePicture: args.pfp, toDo:args.toDo});
+        return await ctx.db.insert("users", {username: args.username, password:args.password, email: args.email, profilePicture: args.profilePicture});
     }
 });
