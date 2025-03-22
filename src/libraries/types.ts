@@ -1,7 +1,16 @@
-// For type-setting objects in the entire app.
-
 import { Id } from "../../convex/_generated/dataModel";
 
+// For type-setting objects in the entire app.
+
+export interface QueryKeys{
+    wantedQuery: "AllUsers"
+}
+export interface QueryReturn{
+    data: User[] | undefined,
+    isLoading: boolean,
+    isError: boolean,
+    error: Error|null
+}
 export interface UserTypes{
     users: User[]
 }

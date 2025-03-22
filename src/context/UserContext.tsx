@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useState } from "react"
-import { User, UserContextType } from "../libraries/types"
+import { createContext, ReactNode, useState } from "react";
+import { User, UserContextType } from "../libraries/types";
 
 const UserContext = createContext<UserContextType>({ isAuthenticated: false, user: null, setUser: null })
 export default UserContext

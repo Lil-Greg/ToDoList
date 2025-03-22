@@ -10,6 +10,12 @@ import Register from './auth/Register.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { UserContextProvider } from './context/UserContext.tsx';
 
+// Ideas for Site:
+// 1. =>
+// DOing something with the allowed components for users
+// where if they click that component, it will automatically
+// put a Modal out that prompts them to Sign Up or Log In
+
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 const queryClient = new QueryClient();
 
@@ -22,7 +28,7 @@ const router = createBrowserRouter([
     path: '/register',
     element: <Register />
   }
-])
+]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

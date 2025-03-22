@@ -1,48 +1,53 @@
-import { FormEvent, useRef } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import "../index.css";
-import { useMutation as useConvexMutation } from "convex/react";
-import useGetUsers from "../backend/getUsers";
+import { useMutation as useConvexMutation, useQuery as useConvexQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { User } from "../libraries/types";
-import { ErrorPage, LoadingPage } from "../state handling/StateHandling";
+import checkUserFn from "../backend/checkUser";
 
 export default function Register() {
+    // Friday, 3/21/2025 -> Priority:
+    // Check if the user is being created,
+    // Check if the user can be madde with the pfp or not
+
     const usernameRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
     const emailRef = useRef<HTMLInputElement | null>(null);
     const profilePictureRef = useRef<HTMLInputElement | null>(null);
 
     const createUser = useConvexMutation(api.users.createUser);
-    const { data, isLoading, isError, error } = useGetUsers();
 
-    if (isLoading) {
-        return <div className="center-state-handling"><LoadingPage /></div>
-    }
-    if (isError || data == undefined) {
-        if (error == null) {
-            return;
-        }
-        const newError = error;
-        return <div className="center-state-handling"><ErrorPage error={newError} /></div>
-    }
-    const userCheck: User[] = data;
-    let inputError = false;
+
+    let inputErrorReasons = [
+        "No Value for A Field",
+        "Size of Picture is Too Large",
+        "User already Exists"
+    ];
+    // let does not re-render the component, but I want to re-render
+    // the component when an input error is found so the inputs can
+    // error as well.
+    const [inputError, setInputError] = useState<boolean>(false);// To set as attribute on different input fields
+    const [inputErrorReason, setInputErrorReason] = useState<string>("");
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
         let profilePicture;
 
+        // Update Needed: Put All checks in an OnChange to Dynamically
+        // Check if the
         if ((!usernameRef || !passwordRef || !emailRef) || (usernameRef.current?.value == '' || passwordRef.current?.value == '' || emailRef.current?.value == '') || (usernameRef.current?.value === undefined || passwordRef.current?.value === undefined || emailRef.current?.value === undefined)) {
-            inputError = true;
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[2]);
             return;
         }
-        if (profilePictureRef === null || profilePictureRef === undefined) {
+        if (profilePictureRef === null || profilePictureRef === undefined || profilePictureRef.current === null) {
             profilePicture = undefined;
+        } else {
+            profilePicture = profilePictureRef.current;
         }
 
-        inputError = false;
+        // inputError = false; use onChange instead
         // less verbosity
         const username = usernameRef.current.value;
         const password = passwordRef.current.value;
@@ -50,17 +55,27 @@ export default function Register() {
 
         //Checking and limiting file size
         if (profilePictureRef.current?.size !== undefined && profilePictureRef !== null && profilePictureRef.current.size > 10485760) {
-            inputError = true
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[1]);
             return;
         }
+        //if not too large, CONVERT THE IMG -> BLOB
+
+
 
         // Check if User is not already in system
-        userCheck.map(userData => {
-            if (userData.username == username || userData.password == password) {
-                inputError = true;
-                return;
-            }
-        });
+        // I want to dynamically check this,
+        // not just when the form is submitted
+        const checkUser = checkUserFn({ username, email });
+        if (checkUser) {
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[2]);
+            // errorReason[2]
+            return;
+        }
+        // I want to store img as a Binary Large Object (BLOB)
+        // to do that I must: Get the img, Convert it to Binary,
+        // then Send it Off (Change the schema first though lol)
         const formValues = {
             username: username,
             password: password,
@@ -68,9 +83,8 @@ export default function Register() {
             profilePicture: profilePicture,
         }
         createUser(formValues);
-
-
     }
+
     return (<>
         <Container className="simple-container">
             <h1 className="r-fh1">Register</h1>

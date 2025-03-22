@@ -6,14 +6,16 @@ export default defineSchema({
         username: v.string(),
         password: v.string(),
         email: v.string(),
-        profilePicture:v.optional(v.string()),
+        profilePicture: v.string(),
         toDo: v.optional(v.id("toDo"))
-    }),
+    })
+        .index("by_username_email", ["username", "email"])
+    ,
     toDo: defineTable({
-        tasks:v.array(
+        tasks: v.array(
             v.object({
                 isCompleted: v.boolean(),
-                message:v.string()
+                message: v.string()
             })
         ),
         private: v.boolean()
