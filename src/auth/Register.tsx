@@ -1,76 +1,107 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import "../index.css";
 import { useMutation as useConvexMutation, useQuery as useConvexQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import checkUserFn from "../backend/checkUser";
+import "../../public/defaultPfp.png";
+import addingImage from "../a-functions/addingImage";
 
 export default function Register() {
     // Friday, 3/21/2025 -> Priority:
     // Check if the user is being created,
     // Check if the user can be madde with the pfp or not
 
+    const [args, setArgs] = useState<{ username: string, email: string }>(
+        {
+            username: "", email: ""
+        }
+    );
+
+    // useState will re-render the component, and when
+    // re-rendered, this will be down again, resulting in
+    // a change in the array and the boolean value.
+    const checkUser = useConvexQuery(api.users.checkUser, args);
+    const [checkUserToBoolean, setCheckUserToBoolean] = useState<boolean>(!!checkUser);
+
+    useEffect(() => setCheckUserToBoolean(!!checkUser), [args]);
+
     const usernameRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
     const emailRef = useRef<HTMLInputElement | null>(null);
-    const profilePictureRef = useRef<HTMLInputElement | null>(null);
 
     const createUser = useConvexMutation(api.users.createUser);
 
-
     let inputErrorReasons = [
-        "No Value for A Field",
-        "Size of Picture is Too Large",
+        "No Value for Username",
+        "No Value for Password",
+        "No Value for Email",
         "User already Exists"
     ];
+
+    const handleOnChange = () => {
+
+        if (!usernameRef || usernameRef.current?.value == '' || usernameRef.current?.value === undefined) {
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[0]);
+            return;
+        }
+        if (!emailRef || emailRef.current?.value == '' || emailRef.current?.value === undefined) {
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[2]);
+            return;
+        }
+        //Do Checks
+        setArgs({
+            username: usernameRef.current.value,
+            email: emailRef.current.value
+        })
+    }
+
     // let does not re-render the component, but I want to re-render
     // the component when an input error is found so the inputs can
     // error as well.
     const [inputError, setInputError] = useState<boolean>(false);// To set as attribute on different input fields
     const [inputErrorReason, setInputErrorReason] = useState<string>("");
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        // 3/25/2025 Update: 
+        // Not allowing pfp change in registration
+        const imgPfp = await addingImage();
+        if (imgPfp === undefined) {
+            console.log("imgPfp is undefined", imgPfp);
+            return;
+        }
 
-        let profilePicture;
-
-        // Update Needed: Put All checks in an OnChange to Dynamically
-        // Check if the
-        if ((!usernameRef || !passwordRef || !emailRef) || (usernameRef.current?.value == '' || passwordRef.current?.value == '' || emailRef.current?.value == '') || (usernameRef.current?.value === undefined || passwordRef.current?.value === undefined || emailRef.current?.value === undefined)) {
+        // checks to prevent invalid data going into database
+        if (!usernameRef || usernameRef.current?.value == '' || usernameRef.current?.value === undefined) {
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[0]);
+            return;
+        }
+        if (!passwordRef || passwordRef.current?.value == '' || passwordRef.current?.value === undefined) {
+            setInputError(true);
+            setInputErrorReason(inputErrorReasons[1]);
+            return;
+        }
+        if (!emailRef || emailRef.current?.value == '' || emailRef.current?.value === undefined) {
             setInputError(true);
             setInputErrorReason(inputErrorReasons[2]);
             return;
         }
-        if (profilePictureRef === null || profilePictureRef === undefined || profilePictureRef.current === null) {
-            profilePicture = undefined;
-        } else {
-            profilePicture = profilePictureRef.current;
-        }
 
-        // inputError = false; use onChange instead
         // less verbosity
         const username = usernameRef.current.value;
         const password = passwordRef.current.value;
         const email = emailRef.current.value;
 
-        //Checking and limiting file size
-        if (profilePictureRef.current?.size !== undefined && profilePictureRef !== null && profilePictureRef.current.size > 10485760) {
-            setInputError(true);
-            setInputErrorReason(inputErrorReasons[1]);
-            return;
-        }
-        //if not too large, CONVERT THE IMG -> BLOB
-
-
-
         // Check if User is not already in system
         // I want to dynamically check this,
         // not just when the form is submitted
-        const checkUser = checkUserFn({ username, email });
-        if (checkUser) {
+        setArgs({ username, email });
+        if (!checkUserToBoolean) {
             setInputError(true);
-            setInputErrorReason(inputErrorReasons[2]);
-            // errorReason[2]
+            setInputErrorReason(inputErrorReasons[3]);
             return;
         }
         // I want to store img as a Binary Large Object (BLOB)
@@ -80,13 +111,20 @@ export default function Register() {
             username: username,
             password: password,
             email: email,
-            profilePicture: profilePicture,
+            profilePicture: imgPfp,
         }
         createUser(formValues);
     }
 
+    /* //Trying to Dynamically watch the Profile Picture
+    if (profilePictureRef === null || profilePictureRef === undefined || profilePictureRef.current === null) {
+        setPfpState(undefined);
+    } else {
+        setPfpState(profilePictureRef.current);
+    }
+    */
     return (<>
-        <Container className="simple-container">
+        <Container className="container simple-container">
             <h1 className="r-fh1">Register</h1>
             <Form onSubmit={handleSubmit}>
                 <Form.FloatingLabel className="col-6 f-input" label="Email: name@example.com">
@@ -104,9 +142,6 @@ export default function Register() {
                         </Form.FloatingLabel>
                     </Col>
                 </Row>
-                <Form.Control type="file" accept="image/*" ref={profilePictureRef} /><br />
-                {profilePictureRef.current?.size} bytes
-
                 <Button type="submit">Submit</Button>
             </Form>
         </Container >
