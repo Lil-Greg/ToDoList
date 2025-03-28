@@ -14,7 +14,7 @@ Using React, TypeScript, Convex, and Bootstrap
 >
 > > 1.  Change the schema for my toDo stuff to make it an empty array and put toDo ids of all of the toDos one owns inside of there.
 >
-> > 2.  Change the way passwords are saved in the database because, right now, they are being saved as straight text and I want to add some security to that (by hashing the text).
+> > 2.  Change the way passwords are saved in the database because, right now, they are being saved as straight text and I want to add some security to that (by hashing the text). Gonna Use Argon2 for the hashing.
 >
 > > 3.  Signing up (registering) works, but I want to add the functionality like the input errors and stuff. Some progress bars would be nice as well.
 >
